@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import Button from '../components/Button';
 
 function CarForm() {
 	const navigate = useNavigate();
@@ -15,9 +16,9 @@ function CarForm() {
 
 	const handleImage = async (e) => {
 		const files = e.target.files;
-		setFormData((prevFormData) => ({
-			...prevFormData,
-			imageFiles: [...(prevFormData.imageFiles || []), ...files],
+		setFormData((prevFiles) => ({
+			...prevFiles,
+			imageFiles: [...(prevFiles.imageFiles || []), ...files],
 		}));
 	};
 
@@ -64,6 +65,7 @@ function CarForm() {
 	};
 	return (
 		<div className='container mx-auto flex flex-col items-center'>
+			<h1 className='m-5'>자동차 정보 입력 양식</h1>
 			<form
 				onSubmit={handleSubmit}
 				className='w-full max-w-lg'
@@ -153,7 +155,7 @@ function CarForm() {
 					>
 						옵션
 					</label>
-					<input
+					<textarea
 						className='shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline'
 						type='text'
 						id='options'
@@ -181,12 +183,14 @@ function CarForm() {
 					/>
 				</div>
 
-				<button
+				<Button
 					type='submit'
-					className='bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline'
+					className='bg-blue-500 hover:bg-blue-700 text-white'
+					rounded
+					danger
 				>
 					Submit
-				</button>
+				</Button>
 			</form>
 		</div>
 	);

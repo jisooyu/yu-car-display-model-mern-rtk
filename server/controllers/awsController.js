@@ -1,5 +1,6 @@
 const fs = require('fs');
 const S3 = require('aws-sdk/clients/s3');
+require('aws-sdk/lib/maintenance_mode_message').suppress = true;
 const config = require('../config/keys');
 const awsConfig = config.aws;
 

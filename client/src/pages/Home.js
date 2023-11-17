@@ -4,7 +4,7 @@ import GoogleLoginButton from '../components/Auth/GoogleLoginButton';
 const Home = () => {
 	return (
 		<div className='h-20 w-auto flex flex-row justify-between items-center bg-blue-400'>
-			<h1 className='m-5 text-gray-100'>Welcome to Car Safety Data App</h1>
+			<h1 className='m-5 text-black'>Welcome to Car Safety Data App</h1>
 			<GoogleLoginButton />
 		</div>
 	);
