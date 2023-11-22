@@ -11,3 +11,7 @@ export const store = configureStore({
 
 export * from './thunks/fetchUser';
 export * from './thunks/fetchData';
+export * from './thunks/postData';
+export * from './thunks/editData';
+export * from './thunks/fetchDataById';
+export * from './thunks/deleteData';

@@ -1,17 +1,28 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { useThunk } from '../hooks/use-thunk';
+// CarEditForm.js
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { postData } from '../store/thunks/postData';
+import { editData, fetchData, fetchDataById } from '../store'; // Create an editData thunk and fetchDataById thunk
 import Button from '../components/Button';
 // import Skeleton from '../components/Skeleton';
-import { fetchData } from '../store';
 
-function CarForm() {
+function CarEditForm() {
+	const { id } = useParams();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	// const [runPostData, isPostDataLoading, postDataError] = useThunk(postData);
-	const [runFetchData, ,] = useThunk(fetchData);
+	const [selectedCarData, setSelectedCarData] = useState({
+		carMakerName: '',
+		modelYear: 0,
+		modelName: '',
+		engine: '',
+		minPrice: 0,
+		maxPrice: 0,
+		mpg: 0,
+		range: 0,
+		options: [],
+		s3ImageUrl: [],
+	});
+
 	const [formData, setFormData] = useState({
 		carMakerName: '',
 		modelYear: 0,
@@ -24,6 +35,47 @@ function CarForm() {
 		options: [],
 		imageFiles: [],
 	});
+
+	useEffect(() => {
+		// Function to fetch data by ID
+		const getDataById = async () => {
+			try {
+				const response = await dispatch(fetchDataById(id));
+				const carData = response.payload;
+				setSelectedCarData({
+					carMakerName: carData.carMakerName,
+					modelYear: carData.modelYear,
+					modelName: carData.modelName,
+					engine: carData.engine,
+					minPrice: carData.minPrice,
+					maxPrice: carData.maxPrice,
+					mpg: carData.mpg,
+					range: carData.range,
+					options: carData.options,
+					s3ImageUrl: carData.s3ImageUrl,
+				});
+				// Example: Set formData based on the fetched data
+				setFormData({
+					carMakerName: carData.carMakerName,
+					modelYear: carData.modelYear,
+					modelName: carData.modelName,
+					engine: carData.engine,
+					minPrice: carData.minPrice,
+					maxPrice: carData.maxPrice,
+					mpg: carData.mpg,
+					range: carData.range,
+					options: carData.options,
+					imageFiles: carData.imageFiles,
+				});
+			} catch (error) {
+				console.error('Error fetching data by ID:', error);
+			}
+		};
+
+		// Call the getDataById function to initiate the data fetching
+		getDataById();
+		// }, [doFetchDataById, id]);
+	}, [dispatch, id]);
 
 	const handleImage = async (e) => {
 		const files = e.target.files;
@@ -43,7 +95,7 @@ function CarForm() {
 		setFormData({ ...formData, [name]: value.split(',') });
 	};
 
-	const handleSubmit = async (e) => {
+	const handleEditSubmit = async (e) => {
 		e.preventDefault();
 		const formDataObject = new FormData();
 		formDataObject.append('carMakerName', formData.carMakerName);
@@ -59,33 +111,32 @@ function CarForm() {
 		// Check if an image file is selected before appending it to FormData
 		if (formData.imageFiles) {
 			for (let i = 0; i < formData.imageFiles.length; i++) {
-				formDataObject.append('imageFiles', formData.imageFiles[i]);
+				formDataObject.append(
+					'imageFiles',
+					formData.imageFiles[i],
+					formData.imageFiles[i].name
+				);
 			}
 		}
-		try {
-			// await runPostData(formDataObject);
-			await dispatch(postData(formDataObject));
-			// if (postDataError) {
-			// 	console.error(postDataError);
-			// 	return;
-			// }
 
-			// to delay the runFetchData()
-			await runFetchData();
-			// await dispatch(fetchData());
+		try {
+			// const response = dispatch(editData({ id, formDataObject }));
+			await dispatch(editData({ id, formDataObject }));
+			await dispatch(fetchData());
 			navigate('/dashboard');
 		} catch (error) {
-			console.error(error);
+			console.error('Error in editData thunk:', error);
 		}
 	};
+
 	return (
 		<div className='container mx-auto flex flex-col items-center'>
-			<h1 className='m-3'>자동차 정보 입력 양식</h1>
+			<h1 className='m-5'>자동차 정보 입력 양식</h1>
 			<form
-				onSubmit={handleSubmit}
+				onSubmit={handleEditSubmit}
 				className='w-full max-w-lg'
 			>
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label
 						className='block text-gray-700 text-sm font-bold mb-2'
 						htmlFor='carMakerName'
@@ -105,7 +156,7 @@ function CarForm() {
 
 				{/* Repeat the above input field pattern for other form fields */}
 
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label
 						className='block text-gray-700 text-sm font-bold mb-2'
 						htmlFor='modelYear'
@@ -123,7 +174,7 @@ function CarForm() {
 					/>
 				</div>
 
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label
 						className='block text-gray-700 text-sm font-bold mb-2'
 						htmlFor='modelName'
@@ -143,7 +194,7 @@ function CarForm() {
 
 				{/* Input for engines */}
 
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label
 						className='block text-gray-700 text-sm font-bold mb-2'
 						htmlFor='engine'
@@ -163,7 +214,7 @@ function CarForm() {
 
 				{/*  input for price range*/}
 
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label className='block text-gray-700 text-sm font-bold mb-2'>
 						최저가격 ($)
 					</label>
@@ -177,7 +228,7 @@ function CarForm() {
 						placeholder='Lower Price'
 					/>
 				</div>
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label className='block text-gray-700 text-sm font-bold mb-2'>
 						최고가격 ($)
 					</label>
@@ -193,7 +244,7 @@ function CarForm() {
 				</div>
 
 				{/* input for mpg*/}
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label className='block text-gray-700 text-sm font-bold mb-2'>
 						MPG
 					</label>
@@ -209,7 +260,7 @@ function CarForm() {
 				</div>
 
 				{/* input driving range*/}
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label className='block text-gray-700 text-sm font-bold mb-2'>
 						EV Range
 					</label>
@@ -225,7 +276,7 @@ function CarForm() {
 				</div>
 				{/* Input for options */}
 
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label className='block text-gray-700 text-sm font-bold mb-2'>
 						옵션
 					</label>
@@ -234,14 +285,14 @@ function CarForm() {
 						type='text'
 						id='options'
 						name='options'
-						rows='6'
+						rows='7'
 						value={formData.options.join(',')}
 						onChange={handleArrayChange}
 						placeholder='Option Names (comma-separated)'
 					/>
 				</div>
 
-				<div className='mb-2'>
+				<div className='mb-4'>
 					<label
 						className='block text-gray-700 text-sm font-bold mb-2'
 						htmlFor='imageFiles'
@@ -257,14 +308,14 @@ function CarForm() {
 						onChange={handleImage}
 					/>
 				</div>
-				<div className='flex flex-row mt-3'>
+				<div className='flex flex-row'>
 					<Button
 						type='submit'
 						className='bg-blue-500 hover:bg-blue-700 text-white'
 						rounded
 						primary
 					>
-						{/* {isPostDataLoading ? <Skeleton /> : 'Submit'} */}
+						{/* {isEditDataLoading ? <Skeleton /> : 'Submit'}÷ */}
 						Submit
 					</Button>
 					<Button
@@ -282,4 +333,4 @@ function CarForm() {
 	);
 }
 
-export default CarForm;
+export default CarEditForm;

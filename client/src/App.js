@@ -6,14 +6,9 @@ import CarPage from './pages/CarPage';
 import Home from './pages/Home';
 import Dashboard from './pages/Dashboard';
 import CarForm from './pages/CarForm';
+import CarEditForm from './pages/CarEditForm';
 
 function App() {
-	// const [doFetchUser, isLoadingUser, loadingUserError] = useThunk(fetchUser);
-
-	// useEffect(() => {
-	// 	doFetchUser();
-	// }, [doFetchUser]);
-
 	const dispatch = useDispatch();
 	useEffect(() => {
 		// Dispatch the fetchData action directly
@@ -35,7 +30,10 @@ function App() {
 					path='/form'
 					element={<CarForm />}
 				/>
-
+				<Route
+					path='/edit/:id'
+					element={<CarEditForm />}
+				/>
 				<Route
 					path='/raw'
 					element={<CarPage />}

@@ -6,6 +6,10 @@ const carSchema = new Schema({
 	modelName: String,
 	modelYear: Number,
 	engine: String,
+	minPrice: Number,
+	maxPrice: Number,
+	mpg: Number,
+	range: Number,
 	options: [String],
 	s3ImageUrl: [String],
 	_user: {

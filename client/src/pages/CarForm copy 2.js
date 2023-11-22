@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useThunk } from '../hooks/use-thunk';
+// import { useThunk } from '../hooks/use-thunk';
 import { useDispatch } from 'react-redux';
 import { postData } from '../store/thunks/postData';
 import Button from '../components/Button';
@@ -9,9 +9,9 @@ import { fetchData } from '../store';
 
 function CarForm() {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
 	// const [runPostData, isPostDataLoading, postDataError] = useThunk(postData);
-	const [runFetchData, ,] = useThunk(fetchData);
+	// const [doFetchData, ,] = useThunk(fetchData);
+	const dispatch = useDispatch();
 	const [formData, setFormData] = useState({
 		carMakerName: '',
 		modelYear: 0,
@@ -63,16 +63,8 @@ function CarForm() {
 			}
 		}
 		try {
-			// await runPostData(formDataObject);
-			await dispatch(postData(formDataObject));
-			// if (postDataError) {
-			// 	console.error(postDataError);
-			// 	return;
-			// }
-
-			// to delay the runFetchData()
-			await runFetchData();
-			// await dispatch(fetchData());
+			dispatch(postData(formDataObject));
+			dispatch(fetchData());
 			navigate('/dashboard');
 		} catch (error) {
 			console.error(error);

@@ -4,15 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import GoogleLogoutButton from '../components/Auth/GoogleLogoutButton';
 import Skeleton from '../components/Skeleton';
 import Button from '../components/Button';
-import CarPage from './CarPage';
+// import CarPage from './CarPage';
 import { useThunk } from '../hooks/use-thunk';
 import { fetchData } from '../store';
+import CarDetails from './CarDetails';
 
 const Dashboard = () => {
 	const [doFetchData, isLoadingData, loadingDataError] = useThunk(fetchData);
 	const { data } = useSelector((state) => {
 		return state.car;
 	});
+
 	const { user } = useSelector((state) => {
 		return state.auth;
 	});
@@ -52,7 +54,8 @@ const Dashboard = () => {
 			</div>
 
 			<div>
-				<CarPage data={data} />
+				{/* <CarPage data={data} /> */}
+				<CarDetails data={data} />
 			</div>
 		</>
 	);
