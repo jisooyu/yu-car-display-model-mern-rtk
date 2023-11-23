@@ -2,15 +2,18 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
+import { useThunk } from '../hooks/use-thunk';
 import { editData, fetchData, fetchDataById } from '../store'; // Create an editData thunk and fetchDataById thunk
 import Button from '../components/Button';
-// import Skeleton from '../components/Skeleton';
+import Skeleton from '../components/Skeleton';
 
 function CarEditForm() {
 	const { id } = useParams();
 	const navigate = useNavigate();
 	const dispatch = useDispatch();
-	const [selectedCarData, setSelectedCarData] = useState({
+	const [runFetchData, isFetchDataLoading, fetchDataError] =
+		useThunk(fetchData);
+	const [, setSelectedCarData] = useState({
 		carMakerName: '',
 		modelYear: 0,
 		modelName: '',
@@ -122,7 +125,11 @@ function CarEditForm() {
 		try {
 			// const response = dispatch(editData({ id, formDataObject }));
 			await dispatch(editData({ id, formDataObject }));
-			await dispatch(fetchData());
+			await runFetchData();
+			if (fetchDataError) {
+				console.error(fetchDataError);
+				return;
+			}
 			navigate('/dashboard');
 		} catch (error) {
 			console.error('Error in editData thunk:', error);
@@ -315,8 +322,7 @@ function CarEditForm() {
 						rounded
 						primary
 					>
-						{/* {isEditDataLoading ? <Skeleton /> : 'Submit'}÷ */}
-						Submit
+						{isFetchDataLoading ? <Skeleton /> : 'Submit'}
 					</Button>
 					<Button
 						type='submit'

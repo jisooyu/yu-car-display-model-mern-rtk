@@ -1,17 +1,14 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useThunk } from '../hooks/use-thunk';
-import { useDispatch } from 'react-redux';
 import { postData } from '../store/thunks/postData';
 import Button from '../components/Button';
-// import Skeleton from '../components/Skeleton';
 import { fetchData } from '../store';
 
 function CarForm() {
 	const navigate = useNavigate();
-	const dispatch = useDispatch();
-	// const [runPostData, isPostDataLoading, postDataError] = useThunk(postData);
-	const [runFetchData, ,] = useThunk(fetchData);
+	const [runPostData, , postDataError] = useThunk(postData);
+	const [runFetchData, , fetchDataError] = useThunk(fetchData);
 	const [formData, setFormData] = useState({
 		carMakerName: '',
 		modelYear: 0,
@@ -63,16 +60,18 @@ function CarForm() {
 			}
 		}
 		try {
-			// await runPostData(formDataObject);
-			await dispatch(postData(formDataObject));
-			// if (postDataError) {
-			// 	console.error(postDataError);
-			// 	return;
-			// }
+			await runPostData(formDataObject);
+			if (postDataError) {
+				console.error(postDataError);
+				return;
+			}
 
 			// to delay the runFetchData()
 			await runFetchData();
-			// await dispatch(fetchData());
+			if (fetchDataError) {
+				console.error(fetchDataError);
+				return;
+			}
 			navigate('/dashboard');
 		} catch (error) {
 			console.error(error);
@@ -102,9 +101,6 @@ function CarForm() {
 						placeholder='Car Maker Name'
 					/>
 				</div>
-
-				{/* Repeat the above input field pattern for other form fields */}
-
 				<div className='mb-2'>
 					<label
 						className='block text-gray-700 text-sm font-bold mb-2'
@@ -264,7 +260,6 @@ function CarForm() {
 						rounded
 						primary
 					>
-						{/* {isPostDataLoading ? <Skeleton /> : 'Submit'} */}
 						Submit
 					</Button>
 					<Button

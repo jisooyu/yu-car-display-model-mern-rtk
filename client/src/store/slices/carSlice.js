@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, current } from '@reduxjs/toolkit';
 import { fetchData } from '../thunks/fetchData';
 import { postData } from '../thunks/postData';
 import { editData } from '../thunks/editData';
@@ -35,7 +35,7 @@ const carSlice = createSlice({
 		builder.addCase(postData.fulfilled, (state, action) => {
 			state.isLoading = false;
 			// Add the newly posted data to state.data
-			state.data.push(action.payload);
+			state.data = [...state.data, action.payload];
 		});
 		builder.addCase(postData.rejected, (state, action) => {
 			state.isLoading = false;
@@ -63,8 +63,11 @@ const carSlice = createSlice({
 		});
 		builder.addCase(editData.fulfilled, (state, action) => {
 			state.isLoading = false;
-			console.log('action.payload from editData.fulfilled', action.payload);
-			state.data = [{ ...state.data, ...action.payload }];
+			const editedData = action.payload;
+			state.data = state.data.map((car) => {
+				console.log('car', current(car));
+				return car._id === editedData._id ? { ...car, ...editedData } : car;
+			});
 		});
 		builder.addCase(editData.rejected, (state, action) => {
 			state.isLoading = false;
