@@ -2,6 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const path = require('path');
+const authRoutes = require('./routes/authRoutes');
+const carRoutes = require('./routes/carRoutes');
 
 const passport = require('passport');
 const config = require('./config/keys');
@@ -37,8 +39,10 @@ app.use(
 app.use(passport.initialize());
 app.use(passport.session());
 
-require('./routes/authRoutes')(app);
-require('./routes/carRoutes')(app);
+// require('./routes/authRoutes')(app);
+app.use('/', authRoutes);
+// require('./routes/carRoutes')(app);
+app.use('/', carRoutes);
 
 if (process.env.NODE_ENV === 'production') {
 	// Express will serve up production assets

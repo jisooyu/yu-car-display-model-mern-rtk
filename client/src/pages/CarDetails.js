@@ -1,12 +1,16 @@
 import { Link } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useThunk } from '../hooks/use-thunk';
 import { deleteData } from '../store/thunks/deleteData';
 import Button from '../components/Button';
 
 function CarDetails({ data }) {
-	const dispatch = useDispatch();
+	const [runDeleteData, , deleteDataError] = useThunk(deleteData);
 	const handleClick = (id) => {
-		dispatch(deleteData(id));
+		runDeleteData(id);
+		if (deleteDataError) {
+			console.error(deleteDataError);
+			return;
+		}
 	};
 	const renderedCars = data.map((car) => {
 		return (
@@ -56,12 +60,7 @@ function CarDetails({ data }) {
 						rounded
 						primary
 					>
-						<Link
-							to={`/edit/${car._id}`}
-							// className='px-4 py-2 border rounded-full w-20  bg-blue-500 text-white'
-						>
-							Edit
-						</Link>
+						<Link to={`/edit/${car._id}`}>Edit</Link>
 					</Button>
 					<Button
 						onClick={() => handleClick(car._id)}

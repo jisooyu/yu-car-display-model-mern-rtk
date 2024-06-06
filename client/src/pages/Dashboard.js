@@ -1,15 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import GoogleLogoutButton from '../components/Auth/GoogleLogoutButton';
 import Skeleton from '../components/Skeleton';
 import Button from '../components/Button';
-// import CarPage from './CarPage';
 import { useThunk } from '../hooks/use-thunk';
 import { fetchData } from '../store';
 import CarDetails from './CarDetails';
 
 const Dashboard = () => {
+	const [searchTerm, setSearchTerm] = useState('');
 	const [doFetchData, isLoadingData, loadingDataError] = useThunk(fetchData);
 	const { data } = useSelector((state) => {
 		return state.car;
@@ -37,6 +37,11 @@ const Dashboard = () => {
 	} else if (loadingDataError) {
 		content = <div>Error fetching data:{loadingDataError.message}</div>;
 	}
+
+	const handleSearch = (e) => {
+		setSearchTerm(e.target.value);
+	};
+
 	return (
 		<>
 			<div className='h-20 w-auto flex flex-row justify-between items-center bg-blue-400'>
@@ -48,7 +53,13 @@ const Dashboard = () => {
 				>
 					Create Car Data
 				</Button>
-				<h1 className='m-5 text-gray-100'>Car Safety Data</h1>
+				<Button
+					className='m-5 bg-yellow-300 text-red-500'
+					rounded
+					onClick={handleSearch}
+				>
+					Search
+				</Button>
 				{content}
 				<GoogleLogoutButton />
 			</div>

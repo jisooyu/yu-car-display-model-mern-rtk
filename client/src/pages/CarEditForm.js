@@ -13,6 +13,7 @@ function CarEditForm() {
 	const dispatch = useDispatch();
 	const [runFetchData, isFetchDataLoading, fetchDataError] =
 		useThunk(fetchData);
+	const [runEditData, , editDataError] = useThunk(editData);
 	const [, setSelectedCarData] = useState({
 		carMakerName: '',
 		modelYear: 0,
@@ -123,9 +124,12 @@ function CarEditForm() {
 		}
 
 		try {
-			// const response = dispatch(editData({ id, formDataObject }));
-			await dispatch(editData({ id, formDataObject }));
-			await runFetchData();
+			runEditData({ id, formDataObject });
+			if (editDataError) {
+				console.error(editDataError);
+				return;
+			}
+			runFetchData();
 			if (fetchDataError) {
 				console.error(fetchDataError);
 				return;
